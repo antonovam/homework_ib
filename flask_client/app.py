@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, request
+import click
+import os
 from config import Config
 from services import get_json_data, send_post_data
 from parser import DataParser
@@ -6,55 +7,66 @@ from models import Base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-app = Flask(__name__)
-app.config.from_object(Config)
-
 # Database setup
-engine = create_engine(app.config['DATABASE_URL'])
+engine = create_engine(Config.DATABASE_URL)
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 
 
-# Route to fetch and store data from the server
-@app.route('/fetch-and-store', methods=['GET'])
+@click.group()
+def cli():
+    """Main entry point for the client application"""
+    pass
+
+
+@cli.command('get')
 def fetch_and_store_data():
-    server_url = f"{app.config['SERVER_URL']}/api/v2/get/data"
+    """Fetch JSON data from the server and store it in the database."""
+    server_url = f"{Config.SERVER_URL}/api/v2/get/data"
 
-    # Fetch data from the server
+    click.echo("Fetching data from server...")
     json_data = get_json_data(server_url)
-    if not json_data:
-        return jsonify({"error": "Failed to fetch data from the server"}), 500
 
-    # Parse and store the JSON data in the database
+    if json_data is None:
+        click.echo(click.style("Error: Failed to fetch data from the server.", fg='red'))
+        return
+
+    click.echo("Parsing and storing data...")
     parser = DataParser(json_data)
+
     session = Session()
     try:
         parser.save_to_database(session)
-        return jsonify({"status": "Data fetched and stored successfully"}), 200
+        click.echo(click.style("Data fetched and stored successfully.", fg='green'))
     except Exception as e:
         session.rollback()
-        return jsonify({"error": f"Failed to store data: {e}"}), 500
+        click.echo(click.style(f"Error storing data: {e}", fg='red'))
     finally:
         session.close()
 
 
-# Route to upload JSON data or a file to the server
-@app.route('/upload-data', methods=['POST'])
-def upload_data():
-    if 'file' in request.files:
-        file = request.files['file']
-        server_url = f"{app.config['SERVER_URL']}/api/v2/add/data"
-        status_code, response = send_post_data(server_url, file=file.filename)
+@cli.command('post')
+@click.option('--file', '-f', type=click.Path(exists=True), help='Path to the JSON file to be posted')
+def post_data(file):
+    """Post JSON data or file to the server."""
+    server_url = f"{Config.SERVER_URL}/api/v2/add/data"
+    if file:
+        click.echo(f"Uploading file: {file}")
+        if not file.endswith('.json'):
+            click.echo(click.style("Error: File must be a JSON file.", fg='red'))
+            return
+        status_code, response = send_post_data(server_url, file=file)
     else:
-        json_data = {"key": "value"}  # Example data
-        server_url = f"{app.config['SERVER_URL']}/api/v2/add/data"
-        status_code, response = send_post_data(server_url, data=json_data)
+        click.echo("Posting sample JSON data...")
+        sample_data = {"key": "value"}  # Replace with actual data
+        status_code, response = send_post_data(server_url, data=sample_data)
 
     if status_code == 200:
-        return jsonify({"status": "POST request successful", "response": response}), 200
+        click.echo(click.style("POST request successful.", fg='green'))
+        click.echo(response)
     else:
-        return jsonify({"error": "Failed to upload data"}), 500
+        click.echo(click.style("Error: Failed to send POST request.", fg='red'))
 
 
-if __name__ == '__main__':
-    app.run(port=5002)
+if __name__ == "__main__":
+    cli()
