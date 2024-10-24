@@ -2,18 +2,17 @@ import os
 from flask import jsonify, request, send_file
 import json
 from werkzeug.utils import secure_filename
+from config import Config
 
-UPLOAD_FOLDER = './uploads'
-JSON_FILE = 'example.json'
 
 def register_routes(app):
     # Ensure upload directory exists
-    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+    os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
 
     @app.route('/api/v2/get/data', methods=['GET'])
     def get_json_data():
         """Serves the JSON data from a file."""
-        file_path = os.path.join(UPLOAD_FOLDER, JSON_FILE)
+        file_path = os.path.join(Config.UPLOAD_FOLDER, Config.JSON_FILE)
         if os.path.exists(file_path):
             return send_file(file_path, as_attachment=True)
         else:
@@ -26,11 +25,11 @@ def register_routes(app):
             file = request.files['file']
             if file.filename.endswith('.json'):
                 filename = secure_filename(file.filename)
-                file.save(os.path.join(UPLOAD_FOLDER, filename))
+                file.save(os.path.join(Config.UPLOAD_FOLDER, filename))
                 return jsonify({"message": "File uploaded successfully"}), 200
         elif request.is_json:
             json_data = request.get_json()
-            file_path = os.path.join(UPLOAD_FOLDER, JSON_FILE)
+            file_path = os.path.join(Config.UPLOAD_FOLDER, Config.JSON_FILE)
             with open(file_path, 'w') as f:
                 json.dump(json_data, f)
             return jsonify({"message": "JSON data saved successfully"}), 200
