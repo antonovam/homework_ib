@@ -6,7 +6,14 @@ def get_json_data(endpoint: str):
     try:
         response = requests.get(endpoint)
         response.raise_for_status()  # Check for HTTP errors
-        return response.json()
+
+        # Check if the response is JSON
+        if response.headers.get("Content-Type") == "application/json":
+            return response.json()
+        else:
+            print("Error: Expected JSON response, got:", response.text)
+            return None
+
     except requests.exceptions.Timeout:
         print("Error: The request timed out.")
     except requests.exceptions.ConnectionError:
