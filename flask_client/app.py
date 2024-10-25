@@ -1,10 +1,17 @@
+
+
 import click
+import logging
 from config import Config
 from services import get_json_data, send_post_data
 from parser import DataParser
 from models import Base, ItemModel, IndicatorModel
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
+# Setup logger
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 # Database setup
 engine = create_engine(Config.DATABASE_URL)
@@ -74,23 +81,23 @@ def fetch_and_store_data():
     """Fetch JSON data from the server and store it in the database."""
     server_url = f"{Config.SERVER_URL}/api/v2/get/data"
 
-    click.echo("Fetching data from server...")
+    logger.info("Fetching data from server...")
     json_data = get_json_data(server_url)
 
     if json_data is None:
-        click.echo(click.style("Error: Failed to fetch data from the server.", fg='red'))
+        logger.error("Error: Failed to fetch data from the server.")
         return
 
-    click.echo("Parsing and storing data...")
+    logger.info("Parsing and storing data...")
     parser = DataParser(json_data)
 
     session = Session()
     try:
         save_to_database(parser, session)
-        click.echo(click.style("Data fetched and stored successfully.", fg='green'))
+        logger.info("Data fetched and stored successfully.")
     except Exception as e:
         session.rollback()
-        click.echo(click.style(f"Error storing data: {e}", fg='red'))
+        logger.error(f"Error storing data: {e}")
     finally:
         session.close()
 
@@ -102,21 +109,21 @@ def post_data(file):
     server_url = f"{Config.SERVER_URL}/api/v2/add/data"
 
     if file:
-        click.echo(f"Uploading file: {file}")
+        logger.info(f"Uploading file: {file}")
         if not file.endswith('.json'):
-            click.echo(click.style("Error: File must be a JSON file.", fg='red'))
+            logger.error("Error: File must be a JSON file.")
             return
         status_code, response = send_post_data(server_url, file=file)
     else:
-        click.echo("Posting sample JSON data...")
+        logger.info("Posting sample JSON data...")
         sample_data = {"key": "value"}  # Replace with actual data
         status_code, response = send_post_data(server_url, data=sample_data)
 
     if status_code == 200:
-        click.echo(click.style("POST request successful.", fg='green'))
-        click.echo(response)
+        logger.info("POST request successful.")
+        logger.info(response)
     else:
-        click.echo(click.style("Error: Failed to send POST request.", fg='red'))
+        logger.error("Error: Failed to send POST request.")
 
 
 if __name__ == "__main__":
