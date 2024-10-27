@@ -66,7 +66,7 @@ python client.py post
 - **Post JSON File**
 
 ```bash
-python python client.py post --file example.json
+python client.py post --file example.json
 ```
 **Fetch and Store Data**
 
