@@ -40,6 +40,12 @@ Make sure you have **Python 3.8+** installed. All dependencies are listed in `re
    ```bash
    pip install -r requirements.txt
 ```
+
+4. **Copy the example environment file and rename it**:
+```bash
+cp .env_example .env
+```
+This ```.env``` file contains environment variables required for the application to run, such as database credentials.
 ## **Running the Application**
 
 1. **Start the Flask Server**: 
