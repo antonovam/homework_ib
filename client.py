@@ -19,15 +19,18 @@ Base.metadata.drop_all(engine)  # Drops all tables
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 
-
 def save_to_database(data_parser: DataParser, session):
     """Saves parsed data from DataParser into the database."""
     for item in data_parser.items:
+        # Debugging: Log the parsed data
+        logger.debug(f"Parsed item: {item.__dict__}")
+
         # Check if the item already exists in the database
         item_model = session.query(ItemModel).filter_by(id=item.id).first()
 
         if item_model is None:
-            # Create new item if it does not exist
+            # Debugging: Indicate that a new item is being added
+            logger.debug(f"Adding new item: {item.id}")
             item_model = ItemModel(
                 id=item.id,
                 author=item.author if item.author is not None else None,
@@ -42,7 +45,8 @@ def save_to_database(data_parser: DataParser, session):
             )
             session.add(item_model)
         else:
-            # Update existing item fields
+            # Debugging: Indicate that an existing item is being updated
+            logger.debug(f"Updating existing item: {item.id}")
             item_model.author = item.author if item.author is not None else item_model.author
             item_model.company_ids = item.company_ids if item.company_ids is not None else item_model.company_ids
             item_model.indicator_ids = item.indicator_ids if item.indicator_ids is not None else item_model.indicator_ids
@@ -57,11 +61,15 @@ def save_to_database(data_parser: DataParser, session):
         if item.indicators is not None:
             # Add or update indicators associated with the item
             for indicator in item.indicators:
+                # Debugging: Log each indicator
+                logger.debug(f"Processing indicator: {indicator.__dict__}")
+
                 # Check if the indicator already exists in the database
                 indicator_model = session.query(IndicatorModel).filter_by(id=indicator.id).first()
 
                 if indicator_model is None:
                     # Create new indicator if it does not exist
+                    logger.debug(f"Adding new indicator: {indicator.id}")
                     indicator_model = IndicatorModel(
                         id=indicator.id,
                         date_first_seen=indicator.date_first_seen if indicator.date_first_seen is not None else None,
@@ -72,9 +80,18 @@ def save_to_database(data_parser: DataParser, session):
                         item_id=item.id
                     )
                     session.add(indicator_model)
+                else:
+                    # Update existing indicator fields
+                    logger.debug(f"Updating existing indicator: {indicator.id}")
+                    indicator_model.date_first_seen = indicator.date_first_seen if indicator.date_first_seen is not None else indicator_model.date_first_seen
+                    indicator_model.date_last_seen = indicator.date_last_seen if indicator.date_last_seen is not None else indicator_model.date_last_seen
+                    indicator_model.deleted = indicator.deleted if indicator.deleted is not None else indicator_model.deleted
+                    indicator_model.description = indicator.description if indicator.description is not None else indicator_model.description
+                    indicator_model.domain = indicator.domain if indicator.domain is not None else indicator_model.domain
 
+    # Commit all changes to the database
     session.commit()
-
+    logger.info("Data successfully saved to the database.")
 
 @click.group()
 def cli():
