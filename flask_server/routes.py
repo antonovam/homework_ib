@@ -2,7 +2,7 @@ import os
 from flask import jsonify, request, send_file
 import json
 from werkzeug.utils import secure_filename
-from config import Config
+from flask_server.config import Config
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
 
