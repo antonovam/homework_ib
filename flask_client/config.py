@@ -1,3 +1,13 @@
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from the .env file securely
+load_dotenv()
+
 class Config:
-    SERVER_URL = "http://localhost:5001"
-    DATABASE_URL = 'sqlite:///parsed_data.db'
+    SERVER_URL = os.getenv("SERVER_URL", "http://localhost:5001")
+    DATABASE_URL = os.getenv("DATABASE_URL")  # No default here to enforce its presence in the .env
+
+# Raise an exception if DATABASE_URL is not set
+    if DATABASE_URL is None:
+        raise ValueError("DATABASE_URL environment variable is not set in the .env file")
