@@ -1,5 +1,5 @@
 import pytest
-from parser import DataParser, Item, Indicator
+from flask_client.parser import DataParser, Item, Indicator
 
 
 # Test DataParser with valid JSON data

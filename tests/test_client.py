@@ -2,9 +2,9 @@ import pytest
 from click.testing import CliRunner
 import requests_mock
 from unittest.mock import patch
-from app import cli, fetch_and_store_data, post_data, save_to_database
-from parser import DataParser
-from models import Base, ItemModel, IndicatorModel
+from client import cli, fetch_and_store_data, post_data, save_to_database
+from flask_client.parser import DataParser
+from flask_client.models import Base, ItemModel, IndicatorModel
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -34,7 +34,7 @@ def requests_mock_fixture():
 
 
 # Test the 'get' command with mocked server response including indicators
-@patch('services.get_json_data')
+@patch('flask_client.services.get_json_data')
 def test_fetch_and_store_data_with_indicators(mock_get_json_data, db_session):
     """Test the client fetching and storing data with mocked server response including indicators."""
 
@@ -238,7 +238,7 @@ def test_save_to_database_with_incomplete_item(db_session):
 
 
 # Test that invalid JSON data is handled gracefully
-@patch('services.get_json_data')
+@patch('flask_client.services.get_json_data')
 def test_invalid_json_handling(mock_get_json_data):
     """Test handling of invalid JSON data during GET request."""
     mock_get_json_data.return_value = None  # Simulate invalid JSON response

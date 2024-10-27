@@ -2,7 +2,7 @@ import pytest
 import os
 import json
 from flask import Flask
-from routes import register_routes
+from flask_server.routes import register_routes
 
 # Define the path for the JSON file
 DATA_FILE_NAME = 'example.json'
@@ -13,7 +13,7 @@ DATA_FILE_NAME = 'example.json'
 def client():
     app = Flask(__name__)
     app.config['TESTING'] = True
-    app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
+    app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../flask_server/uploads')
 
     register_routes(app)
 
