@@ -34,7 +34,7 @@ Make sure you have **Python 3.8+** installed. All dependencies are listed in `re
 2. **Create and activate a virtual environment**:
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   source venv/bin/activate  
     ```
 3.  **Install dependencies**:
    ```bash
@@ -46,7 +46,7 @@ Make sure you have **Python 3.8+** installed. All dependencies are listed in `re
 
 Make sure you are in the root directory of the project
    ```bash
-   python flask_server/app.py
+   python server.py
   ```
 
 The server will start on ```localhost:5001```. You should see output indicating that the server is running.
@@ -60,18 +60,25 @@ To interact with the server via the client, use the following commands:
 - **Post JSON Data**
 
 ```bash
-python flask_client/app.py post
+python client.py post
 ```
 
 - **Post JSON File**
 
 ```bash
-python python flask_client/app.py post --file example.json
+python python client.py post --file example.json
 ```
 **Fetch and Store Data**
 
 ```bash
-python flask_client/app.py get
+python client.py get
 ```
 
+## Running Tests
+ 
+
+Make sure you are in the root directory of the project
+```bash
+pytest tests
+```
 
