@@ -30,45 +30,51 @@ def save_to_database(data_parser: DataParser, session):
             # Create new item if it does not exist
             item_model = ItemModel(
                 id=item.id,
-                author=item.author,
-                company_ids=item.company_ids,
-                indicator_ids=item.indicator_ids,
-                is_published=item.is_published,
-                is_tailored=item.is_tailored,
-                labels=item.labels,
-                langs=item.langs,
-                seq_update=item.seq_update,
-                malware_list=item.malware_list
+                author=item.author if item.author is not None else None,
+                company_ids=item.company_ids if item.company_ids is not None else [],
+                indicator_ids=item.indicator_ids if item.indicator_ids is not None else [],
+                is_published=item.is_published if item.is_published is not None else False,
+                is_tailored=item.is_tailored if item.is_tailored is not None else False,
+                labels=item.labels if item.labels is not None else [],
+                langs=item.langs if item.langs is not None else [],
+                seq_update=item.seq_update if item.seq_update is not None else 0,
+                malware_list=item.malware_list if item.malware_list is not None else [],
             )
             session.add(item_model)
         else:
             # Update existing item fields
-            item_model.author = item.author
-            item_model.company_ids = item.company_ids
-            item_model.indicator_ids = item.indicator_ids
-            item_model.is_published = item.is_published
-            item_model.is_tailored = item.is_tailored
-            item_model.labels = item.labels
-            item_model.langs = item.langs
-            item_model.seq_update = item.seq_update
-            item_model.malware_list = item.malware_list
+            item_model.author = item.author if item.author is not None else item_model.author
+            item_model.company_ids = item.company_ids if item.company_ids is not None else item_model.company_ids
+            item_model.indicator_ids = item.indicator_ids if item.indicator_ids is not None else item_model.indicator_ids
+            item_model.is_published = item.is_published if item.is_published is not None else item_model.is_published
+            item_model.is_tailored = item.is_tailored if item.is_tailored is not None else item_model.is_tailored
+            item_model.labels = item.labels if item.labels is not None else item_model.labels
+            item_model.langs = item.langs if item.langs is not None else item_model.langs
+            item_model.seq_update = item.seq_update if item.seq_update is not None else item_model.seq_update
+            item_model.malware_list = item.malware_list if item.malware_list is not None else item_model.malware_list
 
-        # Add or update indicators associated with the item
-        for indicator in item.indicators:
-            indicator_model = session.query(IndicatorModel).filter_by(id=indicator.id).first()
-            if indicator_model is None:
-                indicator_model = IndicatorModel(
-                    id=indicator.id,
-                    date_first_seen=indicator.date_first_seen,
-                    date_last_seen=indicator.date_last_seen,
-                    deleted=indicator.deleted,
-                    description=indicator.description,
-                    domain=indicator.domain,
-                    item_id=item.id
-                )
-                session.add(indicator_model)
+        # Check if indicators is not None before processing
+        if item.indicators is not None:
+            # Add or update indicators associated with the item
+            for indicator in item.indicators:
+                # Check if the indicator already exists in the database
+                indicator_model = session.query(IndicatorModel).filter_by(id=indicator.id).first()
+
+                if indicator_model is None:
+                    # Create new indicator if it does not exist
+                    indicator_model = IndicatorModel(
+                        id=indicator.id,
+                        date_first_seen=indicator.date_first_seen if indicator.date_first_seen is not None else None,
+                        date_last_seen=indicator.date_last_seen if indicator.date_last_seen is not None else None,
+                        deleted=indicator.deleted if indicator.deleted is not None else False,
+                        description=indicator.description if indicator.description is not None else None,
+                        domain=indicator.domain if indicator.domain is not None else None,
+                        item_id=item.id
+                    )
+                    session.add(indicator_model)
 
     session.commit()
+
 
 @click.group()
 def cli():
