@@ -2,10 +2,10 @@
 
 import click
 import logging
-from config import Config
-from services import get_json_data, send_post_data
-from parser import DataParser
-from models import Base, ItemModel, IndicatorModel
+from flask_client.config import Config
+from flask_client.services import get_json_data, send_post_data
+from flask_client.parser import DataParser
+from flask_client.models import Base, ItemModel, IndicatorModel
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 

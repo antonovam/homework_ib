@@ -1,6 +1,6 @@
 from flask import Flask
-from config import Config
-from routes import register_routes
+from flask_server.config import Config
+from flask_server.routes import register_routes
 
 
 def create_app():
