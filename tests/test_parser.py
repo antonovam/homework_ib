@@ -166,4 +166,4 @@ def test_parser_invalid_structure():
     # Ensure that 'count' and 'items' are default values when structure is invalid
     assert parser.count == 0
     assert len(parser.items) == 0
-    assert parser.seq_update is None
+    assert parser.seq_update == 0

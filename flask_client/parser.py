@@ -3,8 +3,8 @@ from typing import List, Optional
 class Indicator:
     def __init__(self, data: dict):
         self.id: str = data.get('id')
-        self.date_first_seen: str = data.get('dateFirstSeen')
-        self.date_last_seen: str = data.get('dateLastSeen')
+        self.date_first_seen: Optional[str] = data.get('dateFirstSeen')
+        self.date_last_seen: Optional[str] = data.get('dateLastSeen')
         self.deleted: bool = data.get('deleted', False)
         self.description: Optional[str] = data.get('description')
         self.domain: Optional[str] = data.get('domain')
@@ -21,10 +21,10 @@ class Item:
         self.labels: List[str] = data.get('labels', [])
         self.langs: List[str] = data.get('langs', [])
         self.malware_list: List[str] = data.get('malwareList', [])
-        self.seq_update: int = data.get('seqUpdate')
+        self.seq_update: int = data.get('seqUpdate', 0)
 
 class DataParser:
     def __init__(self, json_data: dict):
         self.count: int = json_data.get('count', 0)
         self.items: List[Item] = [Item(item) for item in json_data.get('items', [])]
-        self.seq_update: int = json_data.get('seqUpdate')
+        self.seq_update: int = json_data.get('seqUpdate', 0)
