@@ -7,12 +7,12 @@ This project is a Flask-based client-server application designed to handle JSON 
 ### **Features**
 - **Flask Server** with REST API:
   - **POST**: Upload JSON data or a JSON file.
-  - **GET**: Retrieve specific JSON files or list all available JSON files.
+  - **GET**: Retrieves JSON file.
 - **Flask Client** with Command-Line Interface (CLI):
   - **Fetch and store JSON data** from the server.
   - **Send JSON data** or upload JSON files to the server.
 - **Data Parsing and Storage**:
-  - Parses complex JSON structures.
+  - Parses complex JSON structures following given example (exanple.json).
   - Stores parsed data into an SQLite database.
 - **Automated Tests**:
   - Tests for GET/POST requests.
@@ -66,7 +66,7 @@ python flask_client/app.py post
 - **Post JSON File**
 
 ```bash
-python python flask_client/app.py post --file /path/to/your/file.json
+python python flask_client/app.py post --file example.json
 ```
 **Fetch and Store Data**
 
