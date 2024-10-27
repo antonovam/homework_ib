@@ -1,10 +1,77 @@
-# Homework task for GROUP-IB
-### Dependencies 
-* Flask
-* SQLAlchemy
+# Flask Client-Server Project
 
-### Quick startup guide 
-1. Rise the server `./rise_server.sh`
-2. Rise the client `./rise_client.sh`
-3. Upload data file (in `.json` format) with `curl -X POST -F 'file=@/path/to/your/file.json' http://localhost:5002/upload-data`
-4. Get and store data in DB `curl http://localhost:5002/fetch-and-store`
+## Project Overview
+
+This project is a Flask-based client-server application designed to handle JSON data parsing, storage, and retrieval. The application provides a RESTful API for uploading and retrieving JSON files, as well as a command-line interface for managing data. All data is stored in a local SQLite database using SQLAlchemy ORM.
+
+### **Features**
+- **Flask Server** with REST API:
+  - **POST**: Upload JSON data or a JSON file.
+  - **GET**: Retrieve specific JSON files or list all available JSON files.
+- **Flask Client** with Command-Line Interface (CLI):
+  - **Fetch and store JSON data** from the server.
+  - **Send JSON data** or upload JSON files to the server.
+- **Data Parsing and Storage**:
+  - Parses complex JSON structures.
+  - Stores parsed data into an SQLite database.
+- **Automated Tests**:
+  - Tests for GET/POST requests.
+  - Tests for data parsing accuracy.
+  - Database CRUD operations validation.
+
+## Installation
+
+### **Requirements**
+Make sure you have **Python 3.8+** installed. All dependencies are listed in `requirements.txt`.
+
+### **Step-by-Step Guide**
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/your-username/your-repo-name.git
+   cd your-repo-name
+    ```
+2. **Create and activate a virtual environment**:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+    ```
+3.  **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+```
+## **Running the Application**
+
+1. **Start the Flask Server**: 
+
+Make sure you are in the root directory of the project
+   ```bash
+   python flask_server/app.py
+  ```
+
+The server will start on ```localhost:5001```. You should see output indicating that the server is running.
+
+2. **Running the Client**:
+
+To interact with the server via the client, use the following commands:
+
+**Upload Data**
+
+- **Post JSON Data**
+
+```bash
+python flask_client/app.py post
+```
+
+- **Post JSON File**
+
+```bash
+python python flask_client/app.py post --file /path/to/your/file.json
+```
+**Fetch and Store Data**
+
+```bash
+python flask_client/app.py get
+```
+
+
