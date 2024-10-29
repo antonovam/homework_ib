@@ -19,6 +19,7 @@ Base.metadata.drop_all(engine)  # Drops all tables
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 
+
 def save_to_database(data_parser: DataParser, session):
     """Saves parsed data from DataParser into the database."""
     for item in data_parser.items:
@@ -100,9 +101,9 @@ def cli():
 
 
 @cli.command('get')
-def fetch_and_store_data(version=Config.DEFAULT_API_VERSION):
+def fetch_and_store_data():
     """Fetch JSON data from the server and store it in the database."""
-    server_url = f"{Config.SERVER_URL}/api/{version}/get/data"
+    server_url = f"{Config.SERVER_URL}/api/{Config.DEFAULT_API_VERSION}/get/data"
 
     logger.info("Fetching data from server...")
     json_data = get_json_data(server_url)
@@ -127,9 +128,9 @@ def fetch_and_store_data(version=Config.DEFAULT_API_VERSION):
 
 @cli.command('post')
 @click.option('--file', '-f', type=click.Path(exists=True), help='Path to the JSON file to be posted')
-def post_data(file, version=Config.DEFAULT_API_VERSION):
+def post_data(file):
     """Post JSON data or file to the server."""
-    server_url = f"{Config.SERVER_URL}/api/{version}/add/data"
+    server_url = f"{Config.SERVER_URL}/api/{Config.DEFAULT_API_VERSION}/add/data"
 
     if file:
         logger.info(f"Uploading file: {file}")
