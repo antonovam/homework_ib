@@ -1,8 +1,7 @@
 import pytest
 import os
 import json
-from flask import Flask
-from flask_server.routes import register_routes
+from flask_server.routes import create_app
 
 # Define the path for the JSON file
 DATA_FILE_NAME = 'example.json'
@@ -11,11 +10,9 @@ DATA_FILE_NAME = 'example.json'
 # Setup a Flask test client
 @pytest.fixture
 def client():
-    app = Flask(__name__)
+    app = create_app()
     app.config['TESTING'] = True
     app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../flask_server/uploads')
-
-    register_routes(app)
 
     with app.test_client() as client:
         yield client
@@ -58,26 +55,29 @@ def remove_data(client):
 
 
 # Test the GET /api/v2/get/data endpoint when data exists
-def test_get_data_exists(client, prepare_data):
+@pytest.mark.parametrize("version", ["v2"])  # Set to v2 only now, as there are no other versions
+def test_get_data_exists(client, prepare_data, version):
     """Test that GET /api/v2/get/data returns data when available."""
-    response = client.get('/api/v2/get/data')
+    response = client.get(f'/api/{version}/get/data')
     assert response.status_code == 200
     assert response.data is not None
 
 
 # Test the GET /api/v2/get/data endpoint when no data is available
-def test_get_data_not_found(client, remove_data):
+@pytest.mark.parametrize("version", ["v2"])  # Set to v2 only now, as there are no other versions
+def test_get_data_not_found(client, remove_data, version):
     """Test that GET /api/v2/get/data returns 404 when no data is available."""
-    response = client.get('/api/v2/get/data')
+    response = client.get(f'/api/{version}/get/data')
     assert response.status_code == 404
     assert response.json['error'] == "No data available"
 
 
 # Test the POST /api/v2/add/data endpoint with a JSON payload
-def test_post_json_data(client):
+@pytest.mark.parametrize("version", ["v2"])  # Set to v2 only now, as there are no other versions
+def test_post_json_data(client, version):
     """Test the POST /api/v2/add/data endpoint with JSON payload."""
     json_data = {"key": "value"}
-    response = client.post('/api/v2/add/data', json=json_data)
+    response = client.post(f'/api/{version}/add/data', json=json_data)
 
     assert response.status_code == 200
     assert response.json['message'] == "JSON data saved successfully"
@@ -88,14 +88,15 @@ def test_post_json_data(client):
 
 
 # Test the POST /api/v2/add/data endpoint with file upload
-def test_post_file_upload(client, tmp_path):
+@pytest.mark.parametrize("version", ["v2"])  # Set to v2 only now, as there are no other versions
+def test_post_file_upload(client, tmp_path, version):
     """Test the POST /api/v2/add/data endpoint with file upload."""
     test_file = tmp_path / "test.json"
     test_file.write_text('{"key": "file_data"}')
 
     with open(test_file, 'rb') as f:
         data = {'file': (f, 'test.json')}
-        response = client.post('/api/v2/add/data', content_type='multipart/form-data', data=data)
+        response = client.post(f'/api/{version}/add/data', content_type='multipart/form-data', data=data)
 
         assert response.status_code == 200
         assert response.json['message'] == "File uploaded successfully"

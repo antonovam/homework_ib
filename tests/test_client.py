@@ -10,6 +10,8 @@ from sqlalchemy.orm import sessionmaker
 
 
 SERVER_URL = "http://localhost:5001"
+API_VERSION = "v2"  # Fixing API version for client-based tests
+
 
 # Fixture to setup and teardown an in-memory SQLite database for testing
 @pytest.fixture(scope='module')
@@ -94,7 +96,7 @@ def test_fetch_and_store_data_with_indicators(mock_get_json_data, db_session):
 
 # Test the 'post' command with mocked server response
 def test_post_data(requests_mock_fixture):
-    server_url = f"{SERVER_URL}/api/v2/add/data"
+    server_url = f"{SERVER_URL}/api/{API_VERSION}/add/data"
     # Define the mock response for the POST request
     requests_mock_fixture.post(server_url, json={"message": "POST successful"}, status_code=200)
 
@@ -119,7 +121,7 @@ def test_post_file(requests_mock_fixture, tmp_path):
     test_file = tmp_path / "test.json"
     test_file.write_text('{"key": "file_data"}')
 
-    server_url = f"{SERVER_URL}/api/v2/add/data"
+    server_url = f"{SERVER_URL}/api/{API_VERSION}/add/data"
     # Define the mock response for the POST request
     requests_mock_fixture.post(server_url, json={"message": "File upload successful"},
                                status_code=200)
@@ -141,6 +143,7 @@ def test_post_file(requests_mock_fixture, tmp_path):
     # Extract the file content from the multipart request body
     multipart_body = requests_mock_fixture.last_request.body
     assert b'{"key": "file_data"}' in multipart_body  # Check the file content within the multipart body
+
 
 # Test save_to_database function with edge cases including incomplete indicator data
 def test_save_to_database_with_incomplete_indicators(db_session):
