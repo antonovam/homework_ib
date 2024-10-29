@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 from flask_server.config import Config
 
 # Define the Blueprint for API version v2
-v2 = Blueprint('v2', __name__)
+v2 = Blueprint('v2', __name__, url_prefix='/api/v2')
 
 # Set the upload directory path
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../uploads')

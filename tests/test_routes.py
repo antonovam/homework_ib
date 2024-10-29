@@ -28,5 +28,5 @@ def test_blueprint_registration(client, version):
     # Test that /api/v2/get/data is registered and accessible
     response = client.get(f"/api/{version}/get/data")
     assert response.status_code == 200
-    
+
 
