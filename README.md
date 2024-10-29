@@ -18,6 +18,7 @@ This project is a Flask-based client-server application designed to handle JSON 
   - Tests for GET/POST requests.
   - Tests for data parsing accuracy.
   - Database CRUD operations validation.
+  - Test for API endpoint versions
 
 ## Installation
 
