@@ -11,3 +11,5 @@ class Config:
 # Raise an exception if DATABASE_URL is not set
     if DATABASE_URL is None:
         raise ValueError("DATABASE_URL environment variable is not set in the .env file")
+
+    DEFAULT_API_VERSION = os.getenv("DEFAULT_API_VERSION", "v2")
